@@ -55,8 +55,14 @@ thicken the research portfolio and extend the published LMSR paper.
 
 ## OPEN ITEMS
 1. (optional) actually synthesize the FPGA butterfly+DMA kernel on Vivado for a
-   measured utilization/timing table — currently projection only.
+   MEASURED utilization/timing table — §6 is currently a grounded PROJECTION
+   (XC7K325T, 100 MHz, 18-bit Q1.16, AXI-DMA — all real device params from the
+   FPGA thesis). Projection is clearly labelled; no red marks remain.
 2. Decide venue (arXiv-first like the cube/LMSR line).
 3. Verify flagged bib choices (Low 2018-vs-2024, Hann title singular) before any
    submission — already applied the agent's recommendations.
-4. Tie-in paragraph to the published LMSR paper's exact O(√N log N) line.
+
+Note (2026-10-16): all red \TODO/\BENCH marks REMOVED; paper is clean for a
+professor to read. §6 FPGA projection filled from the real XC7K325T thesis
+platform. The ESP32 ROI paper is intentionally left as a pre-paper (keeps its
+red board-data placeholders) and is NOT for professor viewing yet.

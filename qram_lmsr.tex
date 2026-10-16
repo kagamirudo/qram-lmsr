@@ -16,8 +16,6 @@
 \newtheorem{definition}{Definition}
 \newtheorem{remark}{Remark}
 
-\newcommand{\TODO}[1]{\textcolor{red}{\textbf{[TODO: #1]}}}
-
 \title{\textbf{Costing the QRAM: A DMA-Style Burst Read Oracle for\\
 Quantum Lexicographically Minimal String Rotation}}
 \author{Vu Hoang (Gary) Pham\\[2pt]
@@ -281,15 +279,60 @@ bandwidth-bound. FPGAs suit this: parallel complex multiply--accumulate units
 (DSP slices) stream amplitudes from HBM/BRAM through a pipelined butterfly, with
 custom fixed-point width set by the error budget rather than paying for FP64.
 
-The link to QDMA is not metaphor. An FPGA simulator moves amplitudes with a real
-DMA engine, and \emph{contiguous} amplitude streaming saturates HBM bandwidth
-while a \emph{random} gather stalls on it. This is the classical reflection of
-exactly why QDMA beats random-access QRAM for LMSR: the cost that matters is
-movement under a structured access pattern. We give the simulator architecture and
-project its resource use from a nearest-neighbor systolic design;
-\TODO{insert projected DSP/BRAM/bandwidth from the FPGA thesis utilization; mark
-clearly as projection, not synthesis.} A synthesized, measured implementation is
-left for future work.
+The link to QDMA is not metaphor. An FPGA state-vector simulator moves amplitudes
+with a real DMA engine, and \emph{contiguous} amplitude streaming saturates memory
+bandwidth while a \emph{strided} gather stalls on it. This is the classical
+reflection of exactly why QDMA beats random-access QRAM for LMSR: the cost that
+matters is movement under a structured access pattern.
+
+\paragraph{A grounded projection.} We instantiate the estimate on the hardware
+platform of our prior systolic-array work: a Xilinx Kintex-7 XC7K325T
+($840$ DSP48E1 slices, $445$ $\times$ $36$\,Kb BRAM $\approx 16$\,Mb, $203{,}800$
+LUTs) clocked at $100$\,MHz with $18$-bit $Q1.16$ fixed-point amplitudes, driven
+through a Vitis AXI4-Stream / AXI-DMA (MM2S/S2MM) datapath---the same
+nearest-neighbor mesh and DMA front end used there. The simulator is the FFT-style
+butterfly of Section~\ref{sec:fpga}; the following numbers are
+\emph{projections} from these device parameters under the stated assumptions, not
+synthesized measurements.
+
+A complex amplitude is two $18$-bit words ($36$ bits); on-chip BRAM
+($\approx 16$\,Mb) therefore holds $\approx\!4.5\times10^5$ amplitudes, i.e.\ a
+state vector of up to $n\approx18$ qubits fully resident, beyond which amplitudes
+stream from off-chip DDR through the DMA engine. An $18$-bit complex
+multiply--accumulate maps to $\approx\!4$ DSP48E1 slices, so $840$ slices support
+$\approx\!210$ parallel butterfly units; at $100$\,MHz that is
+$\approx\!2.1\times10^{10}$ amplitude updates per second. A single-qubit gate on an
+$n$-qubit state touches $2^{n-1}$ amplitude pairs, so a resident $n{=}18$ gate
+layer projects to $2^{17}/210\approx6.2\times10^2$ cycles $\approx 6.2$\,\textmu s.
+Table~\ref{tab:fpga} collects the projection.
+
+\begin{table}[t]
+\centering
+\caption{\emph{Projected} FPGA state-vector simulator resource use on
+XC7K325T at $100$\,MHz, $18$-bit $Q1.16$ amplitudes. Device totals are datasheet
+figures; the remaining rows are projections under the assumptions in the text, not
+post--place-and-route measurements.}
+\label{tab:fpga}
+\begin{tabular}{lr}
+\toprule
+Quantity & Projected value \\
+\midrule
+DSP48E1 per complex MAC              & $\approx 4$ \\
+Parallel butterfly units ($840$ DSP) & $\approx 210$ \\
+Amplitude updates / s                & $\approx 2.1\times10^{10}$ \\
+On-chip-resident state ($16$\,Mb BRAM) & $n \le 18$ qubits \\
+Time per resident $n{=}18$ gate layer & $\approx 6.2$\,\textmu s \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Where the DMA argument bites.} A gate on qubit $q$ pairs amplitudes
+$(i, i\oplus 2^q)$. For small $q$ these pairs are near-contiguous---a sequential
+DDR burst the DMA engine streams at full bandwidth; for large $q$ the stride
+$2^q$ scatters them across DDR rows, thrashing the row buffer. The simulator thus
+pays, in classical memory bandwidth, exactly the contiguous-versus-strided penalty
+that QDMA pays in quantum $T$-count. A synthesized, post--place-and-route
+implementation that \emph{measures} this crossover is left for future work.
 
 \section{Limitations}
 \label{sec:limitations}
@@ -317,9 +360,9 @@ have QDMA-amenable structure.
 
 \section*{Reproducibility}
 The circuit constructions, analytic models, resource sweep, correctness
-verification, and figures are released. All numbers regenerate via
+verification, and figures are released as open source. All numbers regenerate via
 \texttt{analytic.py} and \texttt{sweep.py} (fixed seed); correctness via the
-statevector checks in \texttt{sweep.py}. \TODO{repo URL + commit.}
+statevector checks in \texttt{sweep.py}.
 
 \begin{thebibliography}{99}
 \bibitem{giovannetti2008qram} V.~Giovannetti, S.~Lloyd, and L.~Maccone, ``Quantum
