@@ -1,0 +1,28 @@
+N,method,qubits,T,note
+4,QROM,5,12,unary iteration
+4,QROAM(lam=1),6,20,select-swap
+4,bucket-brigade,11,24,model; 4 active 2q/query
+8,QROM,7,28,unary iteration
+8,QROAM(lam=2),9,28,select-swap
+8,bucket-brigade,20,56,model; 6 active 2q/query
+16,QROM,9,60,unary iteration
+16,QROAM(lam=3),12,44,select-swap
+16,bucket-brigade,37,120,model; 8 active 2q/query
+32,QROM,11,124,unary iteration
+32,QROAM(lam=4),15,60,select-swap
+32,bucket-brigade,70,248,model; 10 active 2q/query
+64,QROM,13,252,unary iteration
+64,QROAM(lam=6),20,88,select-swap
+64,bucket-brigade,135,504,model; 12 active 2q/query
+128,QROM,15,508,unary iteration
+128,QROAM(lam=8),25,124,select-swap
+128,bucket-brigade,264,1016,model; 14 active 2q/query
+256,QROM,17,1020,unary iteration
+256,QROAM(lam=11),32,180,select-swap
+256,bucket-brigade,521,2040,model; 16 active 2q/query
+512,QROM,19,2044,unary iteration
+512,QROAM(lam=16),43,252,select-swap
+512,bucket-brigade,1034,4088,model; 18 active 2q/query
+1024,QROM,21,4092,unary iteration
+1024,QROAM(lam=23),58,360,select-swap
+1024,bucket-brigade,2059,8184,model; 20 active 2q/query

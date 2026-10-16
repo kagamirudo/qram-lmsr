@@ -1,0 +1,7 @@
+N=4 start=0 len=4: OK
+N=4 start=2 len=4: OK
+N=8 start=0 len=4: OK
+N=8 start=4 len=4: OK
+N=16 start=0 len=4: OK
+N=16 start=8 len=4: OK
+ALL: VERIFIED
